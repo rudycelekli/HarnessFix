@@ -54,7 +54,7 @@ class CohortTests(unittest.TestCase):
                 self.assertEqual(result.returncode, 2, result.stdout + result.stderr)
 
     def test_report_cohort_must_match(self):
-        for change in [{'error_ids': ['outside']}, {'resolved_ids': ['selected', 'outside']}, {'total': 2}]:
+        for change in [{'error_ids': ['outside']}, {'resolved_ids': ['selected', 'outside']}, {'total': 2}, {'total_instances': 2}]:
             with self.subTest(change=change), tempfile.TemporaryDirectory() as tmp:
                 root = Path(tmp)
                 self.fixture(root)

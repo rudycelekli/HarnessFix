@@ -38,8 +38,9 @@ def _validate_cohort(traces: Path, report: dict, subset: set[str], label: str) -
         if key.endswith("_ids"):
             if not isinstance(values, list) or any(not isinstance(value, str) or value not in subset for value in values):
                 raise ValueError(f"{label} report {key} contains invalid or out-of-cohort task IDs")
-    if "total" in report and report["total"] != len(subset):
-        raise ValueError(f"{label} report total does not match --val-ids")
+    for key in ("total", "total_instances"):
+        if key in report and report[key] != len(subset):
+            raise ValueError(f"{label} report {key} does not match --val-ids")
 
 
 def main() -> None:
