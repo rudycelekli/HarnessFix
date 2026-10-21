@@ -441,6 +441,8 @@ def step_compare_train(version: int, model: str, baseline_train_eval: Path,
         "--max-regression", "9999",
         "--min-improvement", "0",
     ]
+    # Do not reuse metrics or approval from a previous attempt.
+    output.unlink(missing_ok=True)
     subprocess.run(cmd, capture_output=False, text=True, check=False)
     if output.exists():
         return json.loads(output.read_text())
@@ -490,6 +492,8 @@ def step_gate_check(version: int, baseline_eval: Path, current_eval: Path, basel
         "--min-improvement", str(min_improvement),
         "--max-cost-ratio", str(max_cost_ratio),
     ]
+    # Do not reuse metrics or approval from a previous attempt.
+    output_path.unlink(missing_ok=True)
     subprocess.run(cmd, capture_output=False, text=True, check=False)
     return json.loads(output_path.read_text()) if output_path.exists() else {"passed": False, "regressed_ids": []}
 

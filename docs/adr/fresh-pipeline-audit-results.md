@@ -37,3 +37,17 @@ Bench. Baseline fails all four stale-approval subcases; the fix passes all tests
 Tests also verify fresh approval, fresh rejection details, and nonmutating dry
 runs. dotenv loading is mocked before import and subprocess execution is mocked;
 no credentials, model API calls, or benchmark datasets are involved.
+
+## Gate and comparison coverage
+
+Apply the same fresh-output requirement to subprocess-based train comparisons
+and validation gates in GAIA, AppWorld, and Terminal Bench. SWE computes those
+comparisons in-process, so it does not consume stale subprocess report files.
+Missing train reports retain the existing neutral zero-change fallback; missing
+validation reports always reject, including a zero-exit process that wrote no
+report. Exit status alone is insufficient promotion evidence.
+
+The expanded suite has eight tests. Before this extension, nine subcases fail
+across the three modes: stale train improvements and stale gate approvals for
+both zero and nonzero subprocess exits. All eight tests pass after the change,
+including fresh positive/negative reports and dry-run report preservation.
