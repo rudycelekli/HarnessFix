@@ -658,6 +658,8 @@ def step_plan_diff_audit(version: int, model: str, base_version: int, plan_path:
         "--spec", str(plan_spec_path(plan_path)),
         "--output", str(output_path),
     ]
+    # A failed rerun must not inherit an approval from an earlier candidate.
+    output_path.unlink(missing_ok=True)
     subprocess.run(cmd, capture_output=False, text=True, check=False)
     if output_path.exists():
         return json.loads(output_path.read_text())
