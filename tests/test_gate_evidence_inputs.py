@@ -48,3 +48,17 @@ class GateInputTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             process = self.run_gate(Path(tmp), [])
             self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+
+    def test_paired_traces_still_evaluate_targets(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for arm in ['baseline', 'current']:
+                task = root / arm / 'task'
+                task.mkdir(parents=True)
+                (task / 'task.traj.json').write_text('{}')
+            plan = root / 'plan.json'
+            plan.write_text(json.dumps({'fixes': [{'target_metrics': ['resolved_rate']}]}))
+            process = self.run_gate(root, ['--plan-spec', str(plan), '--baseline-traces', str(root / 'baseline'), '--current-traces', str(root / 'current')])
+            self.assertEqual(process.returncode, 0, process.stdout + process.stderr)
+            report = json.loads((root / 'gate.json').read_text())
+            self.assertEqual(report['target_metric_results']['improved_metric_count'], 1)

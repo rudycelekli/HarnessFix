@@ -13,4 +13,4 @@ Requiring traces on every invocation would break intentional resolved-only use. 
 Misconfigured target validation exits with argparse status 2 before emitting a new gate report. Valid paired-trace behavior is unchanged. Directory existence does not guarantee complete, matching task cohorts; that separate evidence condition is not claimed here.
 
 ## Validation
-Five stdlib subprocess tests cover explicit targets without traces, each partial pair, missing plan, nonexistent trace directories, and retained resolved-only success. Baseline has five failing assertions including false PASS output; candidate passes all tests. Synthetic local files only, with no model or benchmark execution.
+Six stdlib subprocess tests cover explicit targets without traces, each partial pair, missing plan, nonexistent trace directories, retained resolved-only success, and valid paired target evaluation. Baseline has five failing assertions including false PASS output; candidate passes all tests. Synthetic local files only, with no model or benchmark execution.
