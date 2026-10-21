@@ -17,6 +17,12 @@ class UnavailableTargetTests(unittest.TestCase):
                     evaluate_target_metrics({'fixes': [{'target_metrics': ['error_rate']}]},
                         {'metrics': {'error_rate': .5}}, {'metrics': {'error_rate': value}})
 
+    def test_aggregate_overflow_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'aggregate'):
+            evaluate_target_metrics({'fixes': [{'target_metrics': ['accuracy', 'exact_match']}]},
+                {'metrics': {'accuracy': 0, 'exact_match': 0}},
+                {'metrics': {'accuracy': 1e308, 'exact_match': 1e308}})
+
     def test_actual_zero_is_valid(self):
         result = evaluate_target_metrics({'fixes': [{'target_metrics': ['error_rate']}]},
             {'metrics': {'error_rate': .5}}, {'metrics': {'error_rate': 0}})

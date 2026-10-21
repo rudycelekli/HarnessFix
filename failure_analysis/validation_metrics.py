@@ -393,9 +393,12 @@ def evaluate_target_metrics(plan_spec: dict[str, Any], baseline: dict[str, Any],
         )
         improvement_signals.append(delta)
 
+    aggregate_delta = sum(improvement_signals) / len(improvement_signals) if improvement_signals else 0.0
+    if not math.isfinite(aggregate_delta):
+        raise ValueError("Target metrics have a nonfinite aggregate delta")
     return {
         "metrics": results,
-        "aggregate_delta": sum(improvement_signals) / len(improvement_signals) if improvement_signals else 0.0,
+        "aggregate_delta": aggregate_delta,
         "improved_metric_count": sum(1 for item in results if item["improved"]),
     }
 

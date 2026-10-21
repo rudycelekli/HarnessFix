@@ -7,7 +7,7 @@ values can also yield misleading improvement signals or corrupt JSON output.
 
 ## Decision
 Require each requested metric on both arms to be a finite numeric observation;
-raise a descriptive ValueError otherwise. Reject nonfinite deltas as well.
+raise a descriptive ValueError otherwise. Reject nonfinite individual and aggregate deltas as well.
 Preserve true zero observations, metric direction and default target selection.
 
 ## Alternatives
@@ -24,4 +24,4 @@ or validate every collector's source telemetry.
 ## Validation
 Stdlib tests reproduced missing metric acceptance before the fix and now check
 missing arms, nonfinite/non-numeric values, genuine zero and default accuracy.
-All four tests pass locally; no benchmark or paid model execution is involved.
+All five tests, including aggregate overflow, pass locally; no benchmark or paid model execution is involved.
