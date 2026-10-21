@@ -3,7 +3,7 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from data.sample_terminal_bench import _load_manifest_splits, _sample_random_splits
+from data.sample_terminal_bench import _find_task_dirs, _load_manifest_splits, _sample_random_splits
 
 
 class SplitIntegrityTests(unittest.TestCase):
@@ -51,3 +51,24 @@ class SplitIntegrityTests(unittest.TestCase):
     def test_oversized_request_still_rejected(self):
         with self.assertRaisesRegex(SystemExit, 'only found'):
             _sample_random_splits([Path('a')], 1, 1, 1, 42)
+
+
+class SourceTaskIdentityTests(unittest.TestCase):
+    def test_duplicate_directory_names_are_rejected_before_splitting(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for group in ('first', 'second'):
+                task = root / group / 'same-task'
+                task.mkdir(parents=True)
+                (task / 'task.toml').write_text('')
+            with self.assertRaisesRegex(SystemExit, 'Duplicate.*same-task'):
+                _find_task_dirs(root)
+
+    def test_distinct_names_remain_sorted_and_hidden_tasks_excluded(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in ('group/b', 'a', '.hidden/a'):
+                task = root / name
+                task.mkdir(parents=True)
+                (task / 'task.toml').write_text('')
+            self.assertEqual([task.name for task in _find_task_dirs(root)], ['a', 'b'])

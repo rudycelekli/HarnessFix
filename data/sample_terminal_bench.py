@@ -21,10 +21,14 @@ DEFAULT_MANIFEST = REPO_ROOT / "data" / "terminal_bench_splits.json"
 
 def _find_task_dirs(source: Path) -> list[Path]:
     candidates = []
+    task_ids = set()
     for task_toml in source.rglob("task.toml"):
         task_dir = task_toml.parent
         if any(part.startswith(".") for part in task_dir.relative_to(source).parts):
             continue
+        if task_dir.name in task_ids:
+            raise SystemExit(f"Duplicate Terminal-Bench source task id: {task_dir.name}")
+        task_ids.add(task_dir.name)
         candidates.append(task_dir)
     return sorted(candidates, key=lambda p: p.name)
 

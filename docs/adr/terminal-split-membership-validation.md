@@ -38,3 +38,13 @@ membership in each of three manifest splits and a negative count in each of
 three random splits. Candidate passes all tests. Additional cases verify valid
 manifest order, existing cross-split overlap rejection, oversized requests,
 zero counts, seed reproducibility, disjointness, and unchanged input lists.
+
+## Source task identities
+
+Task directory basenames are the manifest IDs and split destination names. Reject
+repeated basenames during source discovery, before either manifest lookup or
+random splitting: otherwise the manifest's dictionary silently picks one source
+while random output can fail after deleting prior splits. Two additional tests
+verify ambiguity is rejected and unique nested tasks remain sorted with hidden
+tasks excluded. The duplicate-source test fails before this extension; all eight
+tests pass afterward.
