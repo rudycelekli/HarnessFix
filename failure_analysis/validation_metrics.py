@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import math
 import re
 from pathlib import Path
 from typing import Any
@@ -368,10 +369,17 @@ def evaluate_target_metrics(plan_spec: dict[str, Any], baseline: dict[str, Any],
     results = []
     improvement_signals = []
     for metric in requested_metrics:
-        baseline_value = baseline["metrics"].get(metric, 0.0)
-        current_value = current["metrics"].get(metric, 0.0)
+        values = []
+        for label, run in (("baseline", baseline), ("current", current)):
+            value = run["metrics"].get(metric)
+            if not isinstance(value, (int, float)) or not math.isfinite(value):
+                raise ValueError(f"Target metric {metric} is missing or nonfinite in {label}")
+            values.append(value)
+        baseline_value, current_value = values
         direction = _metric_direction(metric)
         delta = current_value - baseline_value if direction == "higher" else baseline_value - current_value
+        if not math.isfinite(delta):
+            raise ValueError(f"Target metric {metric} has a nonfinite delta")
         improved = delta > 1e-9
         results.append(
             {
